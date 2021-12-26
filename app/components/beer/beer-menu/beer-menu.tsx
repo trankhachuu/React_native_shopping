@@ -49,7 +49,6 @@ const flatListData = [
     description: "bia tiger",
     price: 150,
     quantily: 12,
-    justifyContent: 'flex-start',
   }
   ,
   {
@@ -59,7 +58,6 @@ const flatListData = [
     description: "budweiser",
     price: 180,
     quantily: 12,
-    justifyContent: 'flex-start',
   },
   {
     key: "3",
@@ -68,7 +66,6 @@ const flatListData = [
     description: "bia corona",
     price: 180,
     quantily: 12,
-    justifyContent: 'flex-end',
   },
   {
     key: "4",
@@ -77,7 +74,6 @@ const flatListData = [
     description: "bia laru",
     price: 150,
     quantily: 12,
-    justifyContent: 'flex-end',
   },
   {
     key: "5",
@@ -86,7 +82,6 @@ const flatListData = [
     description: "bia sai gon",
     price: 180,
     quantily: 12,
-    justifyContent: 'flex-end',
   },
   {
     key: "5",
@@ -95,7 +90,6 @@ const flatListData = [
     description: "Bia Maeloc",
     price: 150,
     quantily: 12,
-    justifyContent: 'flex-end',
   },
   {
     key: "6",
@@ -104,7 +98,6 @@ const flatListData = [
     description: "bia heineken",
     price: 180,
     quantily: 12,
-    justifyContent: 'flex-end',
   },
   {
     key: "7",
@@ -113,6 +106,5 @@ const flatListData = [
     description: "bia 333",
     price: 150,
     quantily: 12,
-    justifyContent: 'flex-end',
   }
 ]

@@ -1,7 +1,8 @@
 
 import { observer } from "mobx-react-lite";
 import * as React from "react";
-import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { Image, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { NavigationContainer } from '@react-navigation/native';
 
 
 export class Item {
@@ -11,7 +12,6 @@ export class Item {
     description?: string;
     price?: number;
     quantily: number;
-    justifyContent: string;
 }
 
 export interface BeerMenuItemProps {
@@ -25,13 +25,20 @@ export interface BeerMenuItemProps {
 /**
  * Describe your component here
  */
-export const BeerMenuItem = observer(function BeerMenuItem(props: BeerMenuItemProps) {
+export const BeerMenuItem = observer(function BeerMenuItem(props: BeerMenuItemProps, { navigation }) {
     const {
-        item
+        item,
     } = props
 
+    const [count, setCount] = React.useState(0);
+
+    const onPress = (item) => {
+        navigation.navigate('beerMenu')
+    };
+
     return (
-        <View style={styles.itemFlatList}>
+        <TouchableOpacity style={styles.itemFlatList} onPress={() => onPress(item)}>
+            {/* <TouchableOpacity onPress={onPress} style={{ flex: 1 }}> */}
             <Image style={{ width: '100%', height: 90, resizeMode: 'contain', alignSelf: 'flex-start' }} source={{ uri: item.image }}></Image>
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>{item.name}</Text>
             <View style={{
@@ -49,8 +56,8 @@ export const BeerMenuItem = observer(function BeerMenuItem(props: BeerMenuItemPr
                     textAlign: 'center',
                 }}>quantily: {item.quantily}</Text></View>
             </View>
-
-        </View>
+            {/* </TouchableOpacity> */}
+        </TouchableOpacity>
     )
 })
 
