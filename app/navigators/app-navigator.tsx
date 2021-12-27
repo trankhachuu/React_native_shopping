@@ -6,6 +6,7 @@
  */
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native"
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from "react"
 import { useColorScheme } from "react-native"
 import { Beer, BeerMenu, ListMenu } from "../components"
@@ -35,7 +36,7 @@ export type NavigatorParamList = {
 const Tab = createMaterialTopTabNavigator();
 
 // Documentation: https://reactnavigation.org/docs/stack-navigator/
-// const Stack = createNativeStackNavigator<NavigatorParamList>()
+const Stack = createNativeStackNavigator<NavigatorParamList>()
 
 const AppStack = () => {
   return (
@@ -51,11 +52,11 @@ const AppStack = () => {
     //   <Stack.Screen name="beer" component={BeerScreen} />
     // </Stack.Navigator>
 
-    <Tab.Navigator>
-      <Tab.Screen name="beerMenu" component={BeerMenu} />
-      <Tab.Screen name="beer" component={Beer} />
-      <Tab.Screen name="listMenu" component={ListMenu} />
-    </Tab.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen name="beerMenu" component={BeerMenu} />
+      <Stack.Screen name="beer" component={Beer} />
+      <Stack.Screen name="listMenu" component={ListMenu} />
+    </Stack.Navigator>
   )
 }
 

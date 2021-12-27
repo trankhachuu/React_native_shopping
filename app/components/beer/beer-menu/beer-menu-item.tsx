@@ -1,44 +1,36 @@
 
+import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import * as React from "react";
 import { Image, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-
-
-export class Item {
-    key?: string;
-    name?: string;
-    image?: string;
-    description?: string;
-    price?: number;
-    quantily: number;
-}
+import { BeerModel } from "../model/beer-model";
 
 export interface BeerMenuItemProps {
     /**
      * An optional style override useful for padding & margin.
      */
     style?: StyleProp<ViewStyle>
-    item: Item
+    item?: BeerModel
 }
 
 /**
  * Describe your component here
  */
-export const BeerMenuItem = observer(function BeerMenuItem(props: BeerMenuItemProps, { navigation }) {
+export const BeerMenuItem = observer(function BeerMenuItem(props: BeerMenuItemProps) {
     const {
         item,
     } = props
 
-    const [count, setCount] = React.useState(0);
+    const navigation = useNavigation();
 
-    const onPress = (item) => {
-        navigation.navigate('beerMenu')
+    const _chooseBeer = (item) => {
+        navigation.navigate('beer', {
+            item: item,
+        });
     };
 
     return (
-        <TouchableOpacity style={styles.itemFlatList} onPress={() => onPress(item)}>
-            {/* <TouchableOpacity onPress={onPress} style={{ flex: 1 }}> */}
+        <TouchableOpacity style={styles.itemFlatList} onPress={() => _chooseBeer(item)}>
             <Image style={{ width: '100%', height: 90, resizeMode: 'contain', alignSelf: 'flex-start' }} source={{ uri: item.image }}></Image>
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>{item.name}</Text>
             <View style={{
@@ -56,7 +48,6 @@ export const BeerMenuItem = observer(function BeerMenuItem(props: BeerMenuItemPr
                     textAlign: 'center',
                 }}>quantily: {item.quantily}</Text></View>
             </View>
-            {/* </TouchableOpacity> */}
         </TouchableOpacity>
     )
 })

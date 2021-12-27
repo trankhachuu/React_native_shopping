@@ -1,9 +1,11 @@
 import * as React from "react"
-import { FlatList, Image, SafeAreaView, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "react-native"
+import { Button, FlatList, Image, SafeAreaView, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "react-native"
 import { observer } from "mobx-react-lite"
 import { color, typography } from "../../../theme"
 import { Text } from "../../text/text"
 import CheckBox from '@react-native-community/checkbox';
+import { useRoute } from "@react-navigation/native"
+import { BeerOrder } from "../model/beer-order"
 // import { Checkbox } from "../.."
 
 // const CONTAINER: ViewStyle = {
@@ -25,11 +27,19 @@ export interface ListMenuProps {
  * Describe your component here
  */
 export const ListMenu = observer(function ListMenu(props: ListMenuProps) {
-
+  const route = useRoute();
   const [isSelected, setSelection] = React.useState(false);
+  const [beerOrder, setBeerOrder] = React.useState(route.params.order);
+  const [count, setCount] = React.useState(0);
+
+  console.debug(beerOrder);
 
   const renderItem = ({ item }) => (
-    <TypeOfBeer item={item} isSelected={isSelected} setSelection={setSelection} />
+    <TypeOfBeer item={item}
+      isSelected={isSelected}
+      setSelection={setSelection}
+      setCountProps={setCount}
+      countProps={count} />
   );
 
   return (
@@ -63,23 +73,42 @@ export const ListMenu = observer(function ListMenu(props: ListMenuProps) {
   )
 })
 
-const TypeOfBeer = ({ item, isSelected, setSelection }) => (
-  <View style={styles.item}>
-    <Image style={styles.itemImage} source={{ uri: item.image }}></Image>
-    <View style={{
-      flex: 1,
-      marginTop: 2,
-      marginLeft: 8
-    }}><Text style={styles.itemTitle}>{item.title}</Text>
-      <Text style={styles.itemPrice}>${item.price}</Text>
-      <CheckBox
-        value={isSelected}
-        onValueChange={() => setSelection(!isSelected)}
-        style={styles.checkbox}
-      />
+const TypeOfBeer = ({ item, isSelected, setSelection, setCountProps, countProps }) => {
+
+
+
+  return (
+    <View style={styles.item}>
+      <Image style={styles.itemImage} source={{ uri: item.image }}></Image>
+      <View style={{
+        flex: 1,
+        marginTop: 2,
+        marginLeft: 8
+      }}><Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemPrice}>${item.price}</Text>
+        <View style={{ flex: 1, flexDirection: 'row', direction: 'ltr', justifyContent: 'center' }}>
+          <View style={{ flex: 0.5 }}>
+            <Button onPress={() => setCountProps(countProps + 1)} title="+" color="#841584"></Button>
+          </View>
+          <View style={{ flex: 0.5, borderWidth: 1, borderColor: '#FFFFFF', backgroundColor: '#FFFFFF', marginBottom: 7, justifyContent: 'center' }}>
+            <Text style={{ textAlign: 'center', color: 'black', alignItems: 'center' }}>{countProps}</Text>
+          </View>
+          <View style={{ flex: 0.5 }}>
+            <Button onPress={() => setCountProps(countProps - 1)} title="-"></Button>
+          </View>
+          <View style={{ flex: 3 }}></View>
+        </View>
+        <View style={{ flex: 1 }}>
+          <CheckBox
+            value={isSelected}
+            onValueChange={() => setSelection(!isSelected)}
+            style={styles.checkbox}
+          />
+        </View>
+      </View>
     </View>
-  </View>
-);
+  )
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -121,7 +150,6 @@ const styles = StyleSheet.create({
   },
 
   checkbox: {
-    top: 10,
     color: 'balck',
   },
 });

@@ -31,7 +31,7 @@ export const CharacterStoreModel = types
   }))
 
 type CharacterStoreType = Instance<typeof CharacterStoreModel>
-export interface CharacterStore extends CharacterStoreType {}
+export interface CharacterStore extends CharacterStoreType { }
 type CharacterStoreSnapshotType = SnapshotOut<typeof CharacterStoreModel>
-export interface CharacterStoreSnapshot extends CharacterStoreSnapshotType {}
+export interface CharacterStoreSnapshot extends CharacterStoreSnapshotType { }
 export const createCharacterStoreDefaultModel = () => types.optional(CharacterStoreModel, {})
