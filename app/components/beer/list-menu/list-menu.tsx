@@ -1,11 +1,10 @@
-import * as React from "react"
-import { Button, FlatList, Image, SafeAreaView, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "react-native"
-import { observer } from "mobx-react-lite"
-import { color, typography } from "../../../theme"
-import { Text } from "../../text/text"
-import CheckBox from '@react-native-community/checkbox';
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import CheckBox from '@react-native-community/checkbox'
 import { useRoute } from "@react-navigation/native"
-import { BeerOrder } from "../model/beer-order"
+import { observer } from "mobx-react-lite"
+import * as React from "react"
+import { FlatList, Image, Pressable, SafeAreaView, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "react-native"
+import { Text } from "../../text/text"
 // import { Checkbox } from "../.."
 
 // const CONTAINER: ViewStyle = {
@@ -31,6 +30,31 @@ export const ListMenu = observer(function ListMenu(props: ListMenuProps) {
   const [isSelected, setSelection] = React.useState(false);
   const [beerOrder, setBeerOrder] = React.useState(route.params.order);
   const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    // SyncStorage("beerOrder", route.params.order);
+    // console.debug(SyncStorage.get("beerOrder"))
+    setStorageValue();
+    getStorageValue();
+  });
+
+  async function setStorageValue() {
+    try {
+      await AsyncStorage.setItem("beerOrder", route.params.order);
+      console.debug("susccess")
+    } catch {
+      console.debug("loi")
+    }
+  }
+
+  async function getStorageValue() {
+    try {
+      const value = await AsyncStorage.get("beerOrder");
+      console.debug("susccess")
+    } catch {
+      console.debug("loi")
+    }
+  }
 
   console.debug(beerOrder);
 
@@ -75,8 +99,6 @@ export const ListMenu = observer(function ListMenu(props: ListMenuProps) {
 
 const TypeOfBeer = ({ item, isSelected, setSelection, setCountProps, countProps }) => {
 
-
-
   return (
     <View style={styles.item}>
       <Image style={styles.itemImage} source={{ uri: item.image }}></Image>
@@ -84,25 +106,26 @@ const TypeOfBeer = ({ item, isSelected, setSelection, setCountProps, countProps 
         flex: 1,
         marginTop: 2,
         marginLeft: 8
-      }}><Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemPrice}>${item.price}</Text>
-        <View style={{ flex: 1, flexDirection: 'row', direction: 'ltr', justifyContent: 'center' }}>
-          <View style={{ flex: 0.5 }}>
-            <Button onPress={() => setCountProps(countProps + 1)} title="+" color="#841584"></Button>
-          </View>
-          <View style={{ flex: 0.5, borderWidth: 1, borderColor: '#FFFFFF', backgroundColor: '#FFFFFF', marginBottom: 7, justifyContent: 'center' }}>
-            <Text style={{ textAlign: 'center', color: 'black', alignItems: 'center' }}>{countProps}</Text>
-          </View>
-          <View style={{ flex: 0.5 }}>
-            <Button onPress={() => setCountProps(countProps - 1)} title="-"></Button>
-          </View>
+      }}>
+        <View style={{ flex: 1, justifyContent: 'space-around' }}>
+          <Text style={styles.itemTitle}>{item.title}</Text>
+          <Text style={styles.itemPrice}>${item.price}</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Pressable style={styles.button} onPress={() => setCountProps(countProps + 1)}>
+            <Text style={styles.text}>+</Text>
+          </Pressable>
+          <Pressable style={styles.button}>
+            <Text style={styles.text}>{countProps}</Text></Pressable>
+          <Pressable style={styles.button} onPress={() => setCountProps(countProps - 1)}>
+            <Text style={styles.text}>-</Text>
+          </Pressable>
           <View style={{ flex: 3 }}></View>
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
           <CheckBox
             value={isSelected}
             onValueChange={() => setSelection(!isSelected)}
-            style={styles.checkbox}
           />
         </View>
       </View>
@@ -139,7 +162,6 @@ const styles = StyleSheet.create({
   itemPrice: {
     fontSize: 13,
     color: 'red',
-    top: 10
   },
 
   itemImage: {
@@ -149,8 +171,27 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
 
-  checkbox: {
+  itemCheckbox: {
     color: 'balck',
+  },
+
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 11,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: 'white',
+  },
+  text: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'black',
+    textAlign: 'center',
+    alignItems: 'center'
   },
 });
 

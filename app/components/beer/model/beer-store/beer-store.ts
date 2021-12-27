@@ -5,9 +5,7 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
  */
 export const BeerStoreModel = types
   .model("BeerStore")
-  .props({
-    
-  })
+  .props({})
   .views((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
   .actions((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
 
