@@ -1,9 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import CheckBox from '@react-native-community/checkbox'
-import { useRoute } from "@react-navigation/native"
 import { observer } from "mobx-react-lite"
 import * as React from "react"
 import { FlatList, Image, Pressable, SafeAreaView, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "react-native"
+import { useStores } from '../../../models'
 import { Text } from "../../text/text"
 // import { Checkbox } from "../.."
 
@@ -26,44 +25,36 @@ export interface ListMenuProps {
  * Describe your component here
  */
 export const ListMenu = observer(function ListMenu(props: ListMenuProps) {
-  const route = useRoute();
-  const [isSelected, setSelection] = React.useState(false);
-  const [beerOrder, setBeerOrder] = React.useState(route.params.order);
-  const [count, setCount] = React.useState(0);
+  const { cartStore } = useStores();
 
+  // const [isSelected, setSelection] = React.useState([]);
+  const [carts, setCarts] = React.useState(cartStore.cartBeers);
+  const [countProps, setCountProps] = React.useState([]);
+  const [isSelected, setSelection] = React.useState([]);
+
+  // let array = []
   React.useEffect(() => {
-    // SyncStorage("beerOrder", route.params.order);
-    // console.debug(SyncStorage.get("beerOrder"))
-    setStorageValue();
-    getStorageValue();
-  });
-
-  async function setStorageValue() {
-    try {
-      await AsyncStorage.setItem("beerOrder", route.params.order);
-      console.debug("susccess")
-    } catch {
-      console.debug("loi")
+    // console.log('init data')
+    if (carts && carts.length > 0) {
+      const arr = []
+      const counts = []
+      carts.forEach((e, i) => {
+        arr.push(false)
+        counts.push(e.quantily)
+        // array.push(false);
+      })
+      setSelection([...arr])
+      setCountProps([...counts])
     }
-  }
+  }, []);
 
-  async function getStorageValue() {
-    try {
-      const value = await AsyncStorage.get("beerOrder");
-      console.debug("susccess")
-    } catch {
-      console.debug("loi")
-    }
-  }
-
-  console.debug(beerOrder);
-
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <TypeOfBeer item={item}
+      index={index}
       isSelected={isSelected}
       setSelection={setSelection}
-      setCountProps={setCount}
-      countProps={count} />
+      setCountProps={setCountProps}
+      countProps={countProps} />
   );
 
   return (
@@ -71,10 +62,9 @@ export const ListMenu = observer(function ListMenu(props: ListMenuProps) {
       <SafeAreaView style={styles.container}>
         <FlatList
           horizontal={false}
-          data={DATA}
+          data={carts}
           style={styles.list}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
         />
       </SafeAreaView>
       <View style={{ backgroundColor: "Blue", flex: 0.1, flexDirection: 'row' }}>
@@ -97,7 +87,36 @@ export const ListMenu = observer(function ListMenu(props: ListMenuProps) {
   )
 })
 
-const TypeOfBeer = ({ item, isSelected, setSelection, setCountProps, countProps }) => {
+const TypeOfBeer = ({ item, index, isSelected, setSelection, setCountProps, countProps }) => {
+
+  const valueChange = () => {
+    isSelected[index] = !isSelected[index];
+    const arr = [...isSelected];
+    const check = arr[index] ? true : false;
+    arr[index] = check;
+    setSelection([...arr])
+  }
+
+  const valuePlus = () => {
+    const arr = [...countProps];
+    const count = arr[index];
+    arr[index] = (count + 1);
+    setCountProps([...arr])
+  }
+
+  const valueMinus = () => {
+    const arr = [...countProps];
+    let count = arr[index];
+    if (count <= 0) {
+      count = 1;
+    }
+    arr[index] = count - 1;
+    setCountProps([...arr])
+  }
+
+  React.useEffect(() => {
+    console.log("countProps[index]" + countProps[index])
+  }, []);
 
   return (
     <View style={styles.item}>
@@ -112,20 +131,20 @@ const TypeOfBeer = ({ item, isSelected, setSelection, setCountProps, countProps 
           <Text style={styles.itemPrice}>${item.price}</Text>
         </View>
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <Pressable style={styles.button} onPress={() => setCountProps(countProps + 1)}>
+          <Pressable style={styles.button} onPress={valuePlus}>
             <Text style={styles.text}>+</Text>
           </Pressable>
           <Pressable style={styles.button}>
-            <Text style={styles.text}>{countProps}</Text></Pressable>
-          <Pressable style={styles.button} onPress={() => setCountProps(countProps - 1)}>
+            <Text style={styles.text}>{countProps[index]}</Text></Pressable>
+          <Pressable style={styles.button} onPress={valueMinus}>
             <Text style={styles.text}>-</Text>
           </Pressable>
           <View style={{ flex: 3 }}></View>
         </View>
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <CheckBox
-            value={isSelected}
-            onValueChange={() => setSelection(!isSelected)}
+            value={isSelected[index]}
+            onChange={valueChange}
           />
         </View>
       </View>
@@ -151,7 +170,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     backgroundColor: '#FFFFFF',
-    // borderWidth: 2,
     height: 130
   },
   itemTitle: {
@@ -195,17 +213,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'Tiger lon',
-    price: 12,
-    image: "https://vn-test-11.slatic.net/p/e4dd332151974f38e80a78eddac21bb4.jpg_684x684q90.jpg"
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Tiger chai',
-    price: 12,
-    image: "https://bizweb.dktcdn.net/thumb/large/100/036/299/products/bia-tiger-bac-chai.jpg"
-  }
-];
+// const DATA = [
+//   {
+//     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+//     title: 'Tiger lon',
+//     price: 12,
+//     image: "https://vn-test-11.slatic.net/p/e4dd332151974f38e80a78eddac21bb4.jpg_684x684q90.jpg"
+//   },
+//   {
+//     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+//     title: 'Tiger chai',
+//     price: 12,
+//     image: "https://bizweb.dktcdn.net/thumb/large/100/036/299/products/bia-tiger-bac-chai.jpg"
+//   }
+// ];

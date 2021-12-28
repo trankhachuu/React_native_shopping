@@ -15,7 +15,29 @@ export const CartModel = types
     description: types.maybe(types.string),
   })
   .views((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
-  .actions((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
+  .actions((self) => ({
+    setName(name) {
+      self.name = name
+    },
+    setPrice(price) {
+      self.price = price
+    },
+    setQuantily(quantily) {
+      self.quantily = quantily
+    },
+    setImage(image) {
+      self.image = image
+    },
+    setTypeBeer(typeBeer) {
+      self.typeBeer = typeBeer
+    },
+    setTitle(title) {
+      self.title = title
+    },
+    setDescription(description) {
+      self.description = description
+    },
+  })) // eslint-disable-line @typescript-eslint/no-unused-vars
 
 type CartType = Instance<typeof CartModel>
 export interface Cart extends CartType { }

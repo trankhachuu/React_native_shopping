@@ -2,8 +2,10 @@ import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from "mobx-react-lite";
 import * as React from "react";
+import { useEffect } from 'react';
 import { Image, SafeAreaView, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
+import { useStores } from '../../models';
 import { BeerModel } from './model/beer-model';
 import { BeerOrder } from './model/beer-order';
 
@@ -15,6 +17,7 @@ export interface BeerProps {
    * An optional style override useful for padding & margin.
    */
   style?: StyleProp<ViewStyle>
+  // cart: Cart
 }
 
 /**
@@ -22,23 +25,30 @@ export interface BeerProps {
  */
 export const Beer = observer(function Beer(props: BeerProps) {
 
-  const beerOrder = new BeerOrder();
+  // const {
+  //   cart
+  // } = props
+
   const navigation = useNavigation();
+  const { cart, cartStore } = useStores();
+
+  const { cartBeer } = cartStore;
 
   const [selected, setSelected] = React.useState([true, false])
   const route = useRoute();
 
   const beer: BeerModel = route.params && route.params.item ? route.params.item : new BeerModel as BeerModel;
-  // mapping beer to beerOrder
-  beerOrder.description = beer.description;
-  beerOrder.price = beer.price;
-  beerOrder.quantily = 1;
-  beerOrder.name = beer.name;
-  beerOrder.image = beer.beerItem ? beer.beerItem[0].image : beer.image;
-  beerOrder.typeBeer = beer.beerItem ? beer.beerItem[0].id : 0;
-  beerOrder.title = beer.beerItem ? beer.beerItem[0].title : "";
 
-  // console.debug(beer);
+  useEffect(() => {
+    // mapping beer to cartOrder
+    cart.setDescription(beer.description);
+    cart.setPrice(beer.price);
+    cart.setQuantily(1);
+    cart.setName(beer.name);
+    cart.setImage(beer.beerItem ? beer.beerItem[0].image : beer.image);
+    cart.setTypeBeer(beer.beerItem ? beer.beerItem[0].id : 0);
+    cart.setTitle(beer.beerItem ? beer.beerItem[0].title : "");
+  }, [])
 
   const _chooseBeer = (item) => {
     beer.beerItem.forEach((e, i) => {
@@ -50,15 +60,20 @@ export const Beer = observer(function Beer(props: BeerProps) {
     })
 
     setSelected([...selected])
-    beerOrder.image = item.image;
-    beerOrder.typeBeer = item.id;
-    beerOrder.title = item.title;
+    cart.setImage(item.image);
+    cart.setTypeBeer(item.id);
+    cart.setTitle(item.title);
   };
 
-  const _addShoppingCart = (order) => {
-    navigation.navigate('listMenu', {
-      order: order,
-    });
+  useEffect(() => {
+    // cartStore.addCartBeer(cart);
+    console.log("cartBeers", cartStore.cartBeers)
+  }, [])
+
+  const _addShoppingCart = (cart) => {
+    cartStore.setCartBeer(cart);
+    cartStore.addCartBeer({ ...cart });
+    navigation.navigate('listMenu');
   }
 
   return (
@@ -95,7 +110,7 @@ export const Beer = observer(function Beer(props: BeerProps) {
         </View>
         <View style={styles.buttom}>
           <View style={styles.itemButtom}><AntDesign name="message1" size={24} color="black" /></View>
-          <TouchableOpacity onPress={() => _addShoppingCart(beerOrder)} style={styles.itemButtom}><AntDesign name="shoppingcart" size={24} color="black" /></TouchableOpacity>
+          <TouchableOpacity onPress={() => _addShoppingCart(cart)} style={styles.itemButtom}><AntDesign name="shoppingcart" size={24} color="black" /></TouchableOpacity>
           <View style={[styles.itemButtom]}><Text style={{ color: 'red' }}>Mua Ngay</Text></View>
         </View>
       </View>
